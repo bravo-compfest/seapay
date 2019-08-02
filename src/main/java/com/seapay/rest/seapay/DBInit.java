@@ -1,5 +1,6 @@
 package com.seapay.rest.seapay;
 
+import com.seapay.rest.seapay.builder.CustomerBuilder;
 import com.seapay.rest.seapay.domain.Customer;
 import com.seapay.rest.seapay.domain.Wallet;
 import com.seapay.rest.seapay.repository.CustomerRepository;
@@ -21,7 +22,11 @@ public class DBInit implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Wallet walletMathias = new Wallet();
         walletMathias.addBalance(BigDecimal.ONE);
-        walletMathias.reduceBalance(BigDecimal.TEN);
+        try {
+            walletMathias.reduceBalance(BigDecimal.TEN);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
 
         Wallet walletErma = new Wallet();
         walletErma.addBalance(BigDecimal.TEN);
@@ -30,8 +35,8 @@ public class DBInit implements CommandLineRunner {
         walletRepository.save(walletMathias);
         walletRepository.save(walletErma);
 
-        Customer mathias = new Customer(walletMathias);
-        Customer erma = new Customer(walletErma);
+        Customer mathias = new CustomerBuilder().setName("mathias").setUsername("mantapgan").setPassword("123456").setWallet(walletMathias).createCustomer();
+        Customer erma = new CustomerBuilder().setWallet(walletErma).createCustomer();
 
         mathias.setUsername("mathias");
 

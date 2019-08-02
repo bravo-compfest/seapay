@@ -1,5 +1,6 @@
 package com.seapay.rest.seapay.domain;
 
+import com.seapay.rest.seapay.builder.CustomerBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -7,55 +8,21 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Table()
+@Table(name = "CUSTOMER")
 @Entity
-public class Customer implements Serializable {
-    @Id
-    @GeneratedValue
-    @Column(updatable = false)
-    private Integer id;
-
-    @Column()
-    private String name;
-
-    @Column()
-    private String username;
-
-    @Column()
-    private String password;
-
-    @OneToOne()
-    @JoinColumn(name = "id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Wallet wallet;
-
-    public Customer() {
-        System.out.println("Customer created");
-    }
-
-    public Customer(Wallet wallet) {
-        this.wallet = wallet;
-        System.out.println("Customer created");
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    //    @Column()
-//    @Email
-//    protected Email email;
-
-    @Column()
-    protected String phoneNumber;
-
-    @Column()
-    protected String authority;
-
-
+public class Customer extends User implements Serializable {
+    @Column(name = "LOYALTYLEVEL")
     private int loyaltyLevel = 0;
 
+    public Customer(String name, String username, String password, Wallet wallet) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.wallet = wallet;
+    }
+
     public void topUp(BigDecimal amount) {
+        wallet.addBalance(amount);
         System.out.println("topUp called");
     }
 
@@ -63,11 +30,9 @@ public class Customer implements Serializable {
         System.out.println("transfer called");
     }
 
-
     @Override
     public String toString() {
-        return String.format("id: %d \n name: %s \n username: %s \n password: %s \n loyaltyLevel : %d", id, name, username, password, loyaltyLevel);
-
+        return String.format("%s \n loyaltyLevel : %d", super.toString(), loyaltyLevel);
     }
 
 
