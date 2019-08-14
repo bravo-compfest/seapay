@@ -7,14 +7,12 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class SeapayApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SeapayApplication.class, args);
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(SeapayApplication.class, args);
-	}
-
-	@Bean
-	public CommandLineRunner DBInit() {
-		return new DBInit();
-	}
-
+    @Bean
+    public CommandLineRunner DBInit() {
+        return new DBInit();
+    }
 }
