@@ -1,5 +1,6 @@
 package com.seapay.rest.seapay.controller;
 
+import com.seapay.rest.seapay.domain.Item;
 import com.seapay.rest.seapay.domain.Merchant;
 import com.seapay.rest.seapay.exception.ResourceNotFoundException;
 import com.seapay.rest.seapay.repository.MerchantRepository;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class MerchantController {
@@ -19,6 +21,18 @@ public class MerchantController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public Merchant save(@RequestBody Merchant merchant){
         return merchantRepository.save(merchant);
+    }
+
+    @PostMapping(value = "/merchants/{merchantId}/addItem")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<Merchant> addItem(@PathVariable Integer merchantId, @RequestBody Item item){
+        return merchantRepository.findById(merchantId).map(merchant -> {
+            RestTemplate restTemplate = new RestTemplate();
+            Item itemMade = restTemplate.postForObject("http://localhost:8089/restapi/items", item, Item.class);
+            merchant.getItemIds().add(itemMade.getId());
+            merchantRepository.save(merchant);
+            return ResponseEntity.ok(merchant);
+        }).orElseThrow(() -> new ResourceNotFoundException("Merchant [merchantId="+merchantId+"] can't be found"));
     }
 
     @GetMapping(value = "/merchants")
